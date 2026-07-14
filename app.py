@@ -5,14 +5,14 @@ import os
 # Inisialisasi Database sederhana
 DB_FILE = "sun_ledger_data.csv"
 if not os.path.exists(DB_FILE):
-    df = pd.DataFrame(columns=["Tanggal", "Tipe", "Kategori", "Nominal", "Catatan"])
+    df = pd.DataFrame(columns=["ID", "Tanggal", "Tipe", "Kategori", "Nominal", "Catatan"])
     df.to_csv(DB_FILE, index=False)
 
 st.set_page_config(page_title="Sun Ledger", page_icon="☀️", layout="wide")
 
-# Sidebar Navigation
+# Sidebar Navigation - Diganti ke Selectbox agar mudah ditekan di HP
 st.sidebar.title("☀️ Sun Ledger")
-menu = st.sidebar.radio("Pilih Menu", ["Home", "Sun Statement", "Sun Wealth", "Sun Equity & Recovery"])
+menu = st.sidebar.selectbox("Pilih Menu", ["Home", "Sun Statement", "Sun Wealth", "Sun Equity & Recovery"])
 
 if menu == "Home":
     st.title("Selamat Datang di Sun Ledger ☀️")

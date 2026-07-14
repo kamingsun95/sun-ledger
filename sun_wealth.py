@@ -6,6 +6,9 @@ import os
 
 DB_FILE = "sun_ledger_data.csv"
 
+def format_rupiah(x):
+    return f"Rp {x:,.0f}".replace(",", ".")
+
 def run():
     st.title("📊 Sun Wealth")
     st.write("Rekapitulasi keuangan bulanan Anda.")
@@ -28,11 +31,11 @@ def run():
     
     col1, col2, col3 = st.columns(3)
     with col1:
-        st.metric("Cash Inflow", f"Rp {total_in:,.0f}".replace(",", "."))
+        st.metric("Cash Inflow", format_rupiah(total_in))
     with col2:
-        st.metric("Cash Outflow", f"Rp {total_out:,.0f}".replace(",", "."))
+        st.metric("Cash Outflow", format_rupiah(total_out))
     with col3:
-        st.metric("Revenue", f"Rp {revenue:,.0f}".replace(",", "."))
+        st.metric("Revenue", format_rupiah(revenue))
         
     st.divider()
     
@@ -67,13 +70,18 @@ def run():
     
     st.divider()
     st.subheader("Riwayat Bulan Sebelumnya")
-    # Grouping by Month-Year
     df['Bulan'] = df['Tanggal'].dt.to_period('M').astype(str)
     df_monthly = df.groupby(['Bulan', 'Tipe'])['Nominal'].sum().unstack(fill_value=0)
     if 'Cash In' not in df_monthly.columns: df_monthly['Cash In'] = 0
     if 'Cash Out' not in df_monthly.columns: df_monthly['Cash Out'] = 0
     df_monthly['Revenue'] = df_monthly['Cash In'] - df_monthly['Cash Out']
-    st.dataframe(df_monthly.style.format("{:,.0f}".replace(",", ".")), use_container_width=True)
+    
+    # Format tabel riwayat bulanan
+    formatted_monthly = df_monthly.copy()
+    for col in formatted_monthly.columns:
+        formatted_monthly[col] = formatted_monthly[col].apply(format_rupiah)
+    st.dataframe(formatted_monthly, use_container_width=True)
     
     # Tombol Export
-    st.download_button("Export ke CSV", df.to_csv(index=False), "sun_ledger_report.csv")
+    csv = df.to_csv(index=False).encode('utf-8')
+    st.download_button("Export ke CSV", csv, "sun_ledger_report.csv", "text/csv")
