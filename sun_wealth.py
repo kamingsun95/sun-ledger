@@ -1,10 +1,11 @@
 import streamlit as st
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 import plotly.express as px
 import os
 
 DB_FILE = "sun_ledger_data.csv"
+WIB = timezone(timedelta(hours=7))
 
 def format_rupiah(x):
     return f"Rp {x:,.0f}".replace(",", ".")
@@ -20,9 +21,9 @@ def run():
     df = pd.read_csv(DB_FILE)
     df['Tanggal'] = pd.to_datetime(df['Tanggal'])
     
-    # Filter bulan ini
-    current_month = datetime.now().month
-    current_year = datetime.now().year
+    # Filter bulan ini berdasarkan WIB
+    current_month = datetime.now(WIB).month
+    current_year = datetime.now(WIB).year
     df_bulan_ini = df[(df['Tanggal'].dt.month == current_month) & (df['Tanggal'].dt.year == current_year)]
     
     total_in = df_bulan_ini[df_bulan_ini['Tipe'] == 'Cash In']['Nominal'].sum()
@@ -76,12 +77,10 @@ def run():
     if 'Cash Out' not in df_monthly.columns: df_monthly['Cash Out'] = 0
     df_monthly['Revenue'] = df_monthly['Cash In'] - df_monthly['Cash Out']
     
-    # Format tabel riwayat bulanan
     formatted_monthly = df_monthly.copy()
     for col in formatted_monthly.columns:
         formatted_monthly[col] = formatted_monthly[col].apply(format_rupiah)
     st.dataframe(formatted_monthly, use_container_width=True)
     
-    # Tombol Export
     csv = df.to_csv(index=False).encode('utf-8')
     st.download_button("Export ke CSV", csv, "sun_ledger_report.csv", "text/csv")
