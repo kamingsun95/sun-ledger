@@ -1,8 +1,10 @@
 import streamlit as st
 import pandas as pd
 import os
+from datetime import datetime, timezone, timedelta
 
 DB_FILE = "sun_ledger_data.csv"
+WIB = timezone(timedelta(hours=7))
 INITIAL_LOSS = 299357000
 
 def format_rupiah(x):
@@ -36,7 +38,6 @@ def run():
         
     st.divider()
     st.subheader("Progress Balik Modal")
-    # Mengubah ke skala 0.0 - 1.0 untuk st.progress
     progress_value = min(persentase_recovery / 100, 1.0)
     st.progress(progress_value)
     
