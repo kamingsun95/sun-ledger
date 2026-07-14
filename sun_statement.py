@@ -27,7 +27,8 @@ def run():
         st.subheader("Cash In (Uang Masuk)")
         with st.form("cash_in_form"):
             paket = st.selectbox("Pilih Paket", list(DEFAULT_PRICES.keys()))
-            nominal = st.number_input("Nominal (Rp)", min_value=0, value=DEFAULT_PRICES[paket], step=10000, format="%,d")
+            # Saya sudah perbaiki formatnya di sini menjadi "%d"
+            nominal = st.number_input("Nominal (Rp)", min_value=0, value=DEFAULT_PRICES[paket], step=10000, format="%d")
             catatan = st.text_input("Catatan (Opsional)")
             submit_in = st.form_submit_button("Submit Cash In")
             
@@ -50,7 +51,8 @@ def run():
         st.subheader("Cash Out (Uang Keluar)")
         with st.form("cash_out_form"):
             kategori_out = st.selectbox("Pilih Kategori", ["KAS", "Expense", "Spending"])
-            nominal_out = st.number_input("Nominal Pengeluaran (Rp)", min_value=0, value=0, step=10000, format="%,d")
+            # Saya sudah perbaiki formatnya di sini menjadi "%d"
+            nominal_out = st.number_input("Nominal Pengeluaran (Rp)", min_value=0, value=0, step=10000, format="%d")
             catatan_out = st.text_input("Catatan Pengeluaran (Opsional)")
             submit_out = st.form_submit_button("Submit Cash Out")
             
