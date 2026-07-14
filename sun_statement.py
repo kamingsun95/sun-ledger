@@ -27,14 +27,12 @@ def run():
         st.subheader("Cash In (Uang Masuk)")
         with st.form("cash_in_form"):
             paket = st.selectbox("Pilih Paket", list(DEFAULT_PRICES.keys()))
-            # Saya sudah perbaiki formatnya di sini menjadi "%d"
             nominal = st.number_input("Nominal (Rp)", min_value=0, value=DEFAULT_PRICES[paket], step=10000, format="%d")
             catatan = st.text_input("Catatan (Opsional)")
             submit_in = st.form_submit_button("Submit Cash In")
             
             if submit_in:
                 new_data = pd.DataFrame([{
-                    "ID": str(datetime.now().timestamp()),
                     "Tanggal": datetime.now(),
                     "Tipe": "Cash In",
                     "Kategori": paket,
@@ -51,14 +49,12 @@ def run():
         st.subheader("Cash Out (Uang Keluar)")
         with st.form("cash_out_form"):
             kategori_out = st.selectbox("Pilih Kategori", ["KAS", "Expense", "Spending"])
-            # Saya sudah perbaiki formatnya di sini menjadi "%d"
             nominal_out = st.number_input("Nominal Pengeluaran (Rp)", min_value=0, value=0, step=10000, format="%d")
             catatan_out = st.text_input("Catatan Pengeluaran (Opsional)")
             submit_out = st.form_submit_button("Submit Cash Out")
             
             if submit_out:
                 new_data = pd.DataFrame([{
-                    "ID": str(datetime.now().timestamp()),
                     "Tanggal": datetime.now(),
                     "Tipe": "Cash Out",
                     "Kategori": kategori_out,
@@ -91,10 +87,10 @@ def run():
         selected_idx = st.selectbox("Pilih transaksi yang ingin dihapus", df_today.index, format_func=lambda i: df_today.loc[i, 'Label'])
         
         if st.button("Hapus Transaksi Terpilih", type="primary"):
-            id_to_delete = df_today.loc[selected_idx, 'ID']
-            df = df[df['ID'] != id_to_delete]  # Hapus berdasarkan ID
+            # PERBAIKAN UTAMA: Langsung menghapus berdasarkan Index baris di database asli
+            df = df.drop(index=selected_idx)
             df.to_csv(DB_FILE, index=False)
-            st.success("Transaksi berhasil dihapus!")
+            st.success("Transaksi berhasil dihapus dari database!")
             st.rerun()
     else:
         st.info("Belum ada transaksi hari ini.")
